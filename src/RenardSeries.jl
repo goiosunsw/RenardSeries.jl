@@ -46,8 +46,10 @@ Return the RX series between vmin and vmax
 
 # Examples
 ```jldoctest
-julia> roundR(237)
-250.0
+julia> Rseries(500,1000, series=5)
+2-element Vector{Float64}:
+  630.0
+ 1000.0
 ```
 """
 function Rseries(vmin, vmax; series=10, resolution=:hi)
