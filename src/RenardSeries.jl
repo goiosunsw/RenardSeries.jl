@@ -1,6 +1,6 @@
 module RenardSeries
 
-export roundR
+export roundR, Rseries
 
 r = Dict(:hi => [1 1.03 1.06 1.09 1.12 1.15 1.18 1.22 1.25 1.28 1.32 1.36 #=
 =# 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 #=
@@ -33,6 +33,50 @@ function findnearest(a, x)
 end
 
 exactRvals(n) = 10 .^ ((0:n-1)/n)
+
+"""
+    Rseries(vmin, vmax; series=10, resolution=:hi)
+
+Return the RX series between vmin and vmax
+(X is the series, 5, 10, 20, 40 or 80)
+
+# Arguments:
+- `series` (5,10,20, 40 or 80) number of log divisions of 1..10
+- `resolution` (:hi, :med, :lo) 
+
+# Examples
+```jldoctest
+julia> roundR(237)
+250.0
+```
+"""
+function Rseries(vmin, vmax; series=10, resolution=:hi)
+    baseSeries = r[resolution]
+    resMinSeries = length(baseSeries)
+    skip = resMinSeries ÷ series
+    pow = floor(log10(vmin))
+    ret = Float64[]
+    idx = 1
+    v = baseSeries[idx]*10^pow
+    while v<=vmax
+        if v >= vmin
+            break
+        else
+            idx += skip
+            v = baseSeries[idx]*10^pow
+        end
+    end
+    while v <= vmax 
+        push!(ret, v)
+        idx += skip
+        if idx > length(baseSeries)
+            pow+=1
+            idx=1
+        end
+        v = baseSeries[idx]*10^pow
+    end
+    ret
+end
 
 """
     roundR(x; series=10, resolution=:hi)
