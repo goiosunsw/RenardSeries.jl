@@ -20,6 +20,31 @@ r = Dict(:hi => [1 1.03 1.06 1.09 1.12 1.15 1.18 1.22 1.25 1.28 1.32 1.36 #=
 
 allSeries = [5, 10, 20, 40, 80]
 
+struct CountCycler{T}
+    base::Vector{T}
+    start::Int64
+    n::Int64
+end
+
+function CountCycler(v::Vector{T}, pos::Int) where T
+    CountCycler(v, pos, length(v))
+end
+
+function CountCycler(v::Vector{T}) where T
+    CountCycler(v, 1, length(v))
+end
+
+function Base.iterate(c::CountCycler{T}, state) where T
+    loops = (state-1) ÷ c.n
+    pos = state - loops*c.n
+    ((c.base[pos],loops), state+=1)
+end
+
+function Base.iterate(c::CountCycler{T}) where T
+    state = c.start
+    iterate(c, state)
+end
+
 function findnearest(a, x)
     idx = searchsortedfirst(a, x)
     if (idx==1); return idx; end
